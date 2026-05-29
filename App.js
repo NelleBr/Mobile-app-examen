@@ -7,6 +7,7 @@ import ProductDetailsScreen from "./screens/ProductDetailsScreen";
 import NewsDetailsScreen from "./screens/NewsDetailsScreen";
 import CampusDetailsScreen from "./screens/CampusDetailsScreen";
 import StudyFinderScreen from "./screens/StudyFinderScreen";
+import StudyDetailsScreen from "./screens/StudyDetailScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -49,6 +50,11 @@ export default function App() {
           name="StudyFinder"
           component={StudyFinderScreen}
           options={{ title: "Studiezoeker" }}
+        />
+        <Stack.Screen
+          name="StudyDetails"
+          component={StudyDetailsScreen}
+          options={{ title: "Opleiding" }}
         />
       </Stack.Navigator>
     </NavigationContainer>

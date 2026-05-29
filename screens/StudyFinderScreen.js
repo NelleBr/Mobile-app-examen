@@ -7,6 +7,7 @@ import {
   TextInput,
   Pressable,
 } from "react-native";
+import StudyCard from "../components/StudyCard";
 
 const studiesData = [
   {
@@ -49,7 +50,7 @@ const campuses = [
   "Zandpoort",
 ];
 
-const StudyFinderScreen = () => {
+const StudyFinderScreen = ({ navigation }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCampus, setSelectedCampus] = useState("");
 
@@ -100,38 +101,16 @@ const StudyFinderScreen = () => {
         </View>
 
         {filteredStudies.map((study) => (
-          <View
+          <StudyCard
             key={study.id}
-            style={[styles.studyCard, { borderColor: study.color }]}
-          >
-            <View style={[styles.badge, { backgroundColor: study.color }]}>
-              <Text style={styles.badgeText}>D/A</Text>
-            </View>
-
-            <Text style={styles.studyTitle}>{study.name}</Text>
-
-            <Text style={[styles.campusText, { color: study.color }]}>
-              ● {study.campus}
-            </Text>
-
-            <Text style={styles.description}>{study.description}</Text>
-
-            <View style={styles.infoRow}>
-              <Text style={styles.duration}>◷ {study.duration}</Text>
-
-              <View
-                style={[styles.gradeBadge, { backgroundColor: study.color }]}
-              >
-                <Text style={styles.gradeText}>{study.grade}</Text>
-              </View>
-            </View>
-
-            <Pressable
-              style={[styles.infoButton, { backgroundColor: study.color }]}
-            >
-              <Text style={styles.infoButtonText}>Meer info →</Text>
-            </Pressable>
-          </View>
+            name={study.name}
+            campus={study.campus}
+            grade={study.grade}
+            duration={study.duration}
+            description={study.description}
+            color={study.color}
+            onPress={() => navigation.navigate("StudyDetails", study)}
+          />
         ))}
       </View>
     </ScrollView>
@@ -204,83 +183,6 @@ const styles = StyleSheet.create({
 
   activeFilterText: {
     color: "#FFFFFF",
-  },
-
-  studyCard: {
-    backgroundColor: "#FFFFFF",
-    borderWidth: 3,
-    borderRadius: 28,
-    padding: 24,
-    marginBottom: 28,
-  },
-
-  badge: {
-    alignSelf: "flex-start",
-    paddingHorizontal: 22,
-    paddingVertical: 14,
-    borderRadius: 14,
-    marginBottom: 24,
-  },
-
-  badgeText: {
-    color: "#FFFFFF",
-    fontSize: 22,
-    fontWeight: "bold",
-  },
-
-  studyTitle: {
-    fontSize: 32,
-    lineHeight: 38,
-    fontWeight: "bold",
-    color: "#364153",
-    marginBottom: 16,
-  },
-
-  campusText: {
-    fontSize: 20,
-    marginBottom: 18,
-  },
-
-  description: {
-    fontSize: 18,
-    lineHeight: 28,
-    color: "#364153",
-    marginBottom: 26,
-  },
-
-  infoRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 26,
-  },
-
-  duration: {
-    fontSize: 18,
-    color: "#6B7280",
-    marginRight: 18,
-  },
-
-  gradeBadge: {
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderRadius: 8,
-  },
-
-  gradeText: {
-    color: "#FFFFFF",
-    fontSize: 16,
-  },
-
-  infoButton: {
-    paddingVertical: 18,
-    borderRadius: 18,
-    alignItems: "center",
-  },
-
-  infoButtonText: {
-    color: "#FFFFFF",
-    fontSize: 20,
-    fontWeight: "bold",
   },
 });
 
