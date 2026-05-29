@@ -16,44 +16,12 @@ import CampusCard from "../components/CampusCard";
 const API_TOKEN =
   "07f0bc77da6f49822c32323358ecaf5cee340cee5656df5811aaacec243c6773";
 
-const campusesData = [
-  {
-    id: 1,
-    name: "Nekkerspoel",
-    focus: "Werken & Leren",
-    color: "#DEDC00",
-    description:
-      "Campus Nekkerspoel richt zich op duaal leren en praktijkgericht onderwijs.",
-    students: "150+",
-    teachers: "100+",
-    courses: "17",
-    address: "Nekkerspoelstraat 74, 2800 Mechelen",
-    phone: "015 55 55 61",
-    email: "info@banekkerspoel.be",
-    image: { uri: "https://placehold.co/600x400" },
-  },
-  {
-    id: 2,
-    name: "De Beemden",
-    focus: "Buiten-Gewoon Leren",
-    color: "#00AFCB",
-    description:
-      "Omdat iedere jongere anders leert, biedt BA De Beemden leerlinggerichte leertrajecten aan.",
-    students: "150+",
-    teachers: "100+",
-    courses: "17",
-    address: "Nekkerspoelstraat 74, 2800 Mechelen",
-    phone: "015 55 55 61",
-    email: "info@banekkerspoel.be",
-    image: { uri: "https://placehold.co/600x400" },
-  },
-];
-
 const HomeScreen = ({ navigation }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [showNews, setShowNews] = useState(true);
   const [products, setProducts] = useState([]);
   const [news, setNews] = useState([]);
+  const [campuses, setCampuses] = useState([]);
 
   useEffect(() => {
     fetch(
@@ -93,40 +61,67 @@ const HomeScreen = ({ navigation }) => {
     )
       .then((res) => res.json())
       .then((data) => {
-        const formattedNews = (data.items || []).map((item) => {
-          const rawContent = item.fieldData?.["volledige-inhoud"] || "";
-
-          const cleanContent = rawContent
-            .replace(/<\/h2>/g, "\n\n")
-            .replace(/<\/p>/g, "\n\n")
-            .replace(/<[^>]*>/g, "")
-            .replace(/&amp;/g, "&");
-
-          return {
-            id: item.id,
-            title: item.fieldData?.name,
-            description: item.fieldData?.["korte-inhoud"],
-            category: item.fieldData?.categorie,
-            campus: item.fieldData?.campus,
-            date: new Date(item.fieldData?.datum).toLocaleDateString("nl-BE", {
-              day: "numeric",
-              month: "long",
-              year: "numeric",
-            }),
-            color: item.fieldData?.["campus-kleur"],
-            image: {
-              uri: item.fieldData?.image?.url,
-            },
-            detailImage: {
-              uri: item.fieldData?.["image-detail"]?.url,
-            },
-            content: cleanContent,
-          };
-        });
+        const formattedNews = (data.items || []).map((item) => ({
+          id: item.id,
+          title: item.fieldData?.name,
+          description: item.fieldData?.["korte-inhoud"],
+          category: item.fieldData?.categorie,
+          campus: item.fieldData?.campus,
+          date: new Date(item.fieldData?.datum).toLocaleDateString("nl-BE", {
+            day: "numeric",
+            month: "long",
+            year: "numeric",
+          }),
+          color: item.fieldData?.["campus-kleur"],
+          image: {
+            uri: item.fieldData?.image?.url,
+          },
+          detailImage: {
+            uri: item.fieldData?.["image-detail"]?.url,
+          },
+          content: item.fieldData?.["volledige-inhoud"],
+        }));
 
         setNews(formattedNews);
       })
       .catch((error) => console.error("Error fetching news:", error));
+  }, []);
+
+  useEffect(() => {
+    fetch(
+      "https://api.webflow.com/v2/collections/6a12ea055b87f35e600d6466/items",
+      {
+        headers: {
+          Authorization: `Bearer ${API_TOKEN}`,
+        },
+      },
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        const formattedCampuses = (data.items || []).map((item) => ({
+          id: item.id,
+          name: item.fieldData?.name,
+          focus: item.fieldData?.focus?.replace(/\uFFFD/g, "").trim(),
+          description: item.fieldData?.["campus-beschrijving"],
+          address: item.fieldData?.adres,
+          phone: item.fieldData?.telefoonnummer,
+          email: item.fieldData?.email,
+          color: item.fieldData?.["campus-kleur"],
+          students: item.fieldData?.["aantal-studenten"],
+          teachers: item.fieldData?.["aantal-leerkrachten"],
+          courses: item.fieldData?.["aantal-opleidingen"],
+          image: {
+            uri: item.fieldData?.image?.url,
+          },
+          detailImage: {
+            uri: item.fieldData?.["image-detail"]?.url,
+          },
+          gallery: item.fieldData?.galerij,
+        }));
+
+        setCampuses(formattedCampuses);
+      })
+      .catch((error) => console.error("Error fetching campuses:", error));
   }, []);
 
   const filteredProducts = products.filter((product) =>
@@ -172,7 +167,7 @@ const HomeScreen = ({ navigation }) => {
 
       <Text style={styles.sectionTitle}>Campussen</Text>
 
-      {campusesData.map((campus) => (
+      {campuses.map((campus) => (
         <CampusCard
           key={campus.id}
           name={campus.name}
