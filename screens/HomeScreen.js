@@ -59,13 +59,31 @@ const campusesData = [
     name: "Nekkerspoel",
     focus: "Werken & Leren",
     color: "#DEDC00",
-    image: { uri: "https://placehold.co/600x400" },
+    description:
+      "Campus Nekkerspoel richt zich op duaal leren en praktijkgericht onderwijs.",
+    students: "150+",
+    teachers: "100+",
+    courses: "17",
+    address: "Nekkerspoelstraat 74, 2800 Mechelen",
+    phone: "015 55 55 61",
+    email: "info@banekkerspoel.be",
+    image: {
+      uri: "https://placehold.co/600x400",
+    },
   },
   {
     id: 2,
     name: "De Beemden",
     focus: "Buiten-Gewoon Leren",
     color: "#00AFCB",
+    description:
+      "Omdat iedere jongere anders leert, biedt BA De Beemden leerlinggerichte leertrajecten aan.",
+    students: "150+",
+    teachers: "100+",
+    courses: "17",
+    address: "Nekkerspoelstraat 74, 2800 Mechelen",
+    phone: "015 55 55 61",
+    email: "info@banekkerspoel.be",
     image: { uri: "https://placehold.co/600x400" },
   },
 ];
