@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -12,25 +12,6 @@ import {
 import ProductCard from "../components/ProductCard";
 import NewsCard from "../components/NewsCard";
 import CampusCard from "../components/CampusCard";
-
-const productsData = [
-  {
-    id: 1,
-    title: "BA rompertje",
-    description: "Wikkelrompertje met korte mouwen. 100% katoen.",
-    price: 14,
-    category: "Kleding",
-    image: { uri: "https://placehold.co/600x400" },
-  },
-  {
-    id: 2,
-    title: "BA thermofles",
-    description: "Thermofles van 790 ml.",
-    price: 7,
-    category: "Drinkflessen",
-    image: { uri: "https://placehold.co/600x400" },
-  },
-];
 
 const newsData = [
   {
@@ -67,9 +48,7 @@ const campusesData = [
     address: "Nekkerspoelstraat 74, 2800 Mechelen",
     phone: "015 55 55 61",
     email: "info@banekkerspoel.be",
-    image: {
-      uri: "https://placehold.co/600x400",
-    },
+    image: { uri: "https://placehold.co/600x400" },
   },
   {
     id: 2,
@@ -91,9 +70,34 @@ const campusesData = [
 const HomeScreen = ({ navigation }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [showNews, setShowNews] = useState(true);
+  const [products, setProducts] = useState([]);
 
-  const filteredProducts = productsData.filter((product) =>
-    product.title.toLowerCase().includes(searchQuery.toLowerCase()),
+  useEffect(() => {
+    fetch("https://api.webflow.com/v2/sites/6a11c594d6fd9a89cc7735ec/products", {
+      headers: {
+        Authorization: "Bearer 07f0bc77da6f49822c32323358ecaf5cee340cee5656df5811aaacec243c6773 ",
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        const formattedProducts = (data.items || []).map((item) => ({
+          id: item.product?.id,
+          title: item.product?.fieldData?.name,
+          description: item.product?.fieldData?.description,
+          price: (item.skus?.[0]?.fieldData?.price?.value || 0) / 100,
+          category: "Product",
+          image: {
+            uri: item.skus?.[0]?.fieldData?.["main-image"]?.url,
+          },
+        }));
+
+        setProducts(formattedProducts);
+      })
+      .catch((error) => console.error("Error fetching products:", error));
+  }, []);
+
+  const filteredProducts = products.filter((product) =>
+    product.title?.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   const filteredNews = newsData.filter((news) =>
@@ -252,7 +256,6 @@ const styles = StyleSheet.create({
     marginBottom: 28,
     alignItems: "center",
   },
-
   studyButtonText: {
     color: "#FFFFFF",
     fontSize: 16,
