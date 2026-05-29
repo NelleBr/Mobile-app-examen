@@ -16,7 +16,7 @@ const NewsCard = ({
 
       <View style={styles.topInfo}>
         <Text style={styles.category}>{category}</Text>
-        <Text style={styles.topInfo}> • {campus}</Text>
+        <Text style={styles.topText}> • {campus}</Text>
       </View>
 
       <Text style={styles.date}>{date}</Text>
@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
     resizeMode: "cover",
   },
 
-  metaRow: {
+  topInfo: {
     flexDirection: "row",
     alignItems: "center",
     marginTop: 16,
@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
 
-  metaText: {
+  topText: {
     color: "#6B7280",
     marginLeft: 10,
     fontSize: 15,
