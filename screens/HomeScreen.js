@@ -13,26 +13,8 @@ import ProductCard from "../components/ProductCard";
 import NewsCard from "../components/NewsCard";
 import CampusCard from "../components/CampusCard";
 
-const newsData = [
-  {
-    id: 1,
-    title: "Leerlingen 2de graad PAV op uitstap naar Leuven",
-    description: "De leerlingen gingen op uitstap naar Leuven.",
-    category: "Activiteit",
-    campus: "Nekkerspoel",
-    date: "12 mei 2026",
-    image: { uri: "https://placehold.co/600x400" },
-  },
-  {
-    id: 2,
-    title: "Internationale uitwisseling in Oslo",
-    description: "Onze leerlingen namen deel aan Erasmus+.",
-    category: "Activiteit",
-    campus: "Zandpoort",
-    date: "26 mei 2026",
-    image: { uri: "https://placehold.co/600x400" },
-  },
-];
+const API_TOKEN =
+  "07f0bc77da6f49822c32323358ecaf5cee340cee5656df5811aaacec243c6773";
 
 const campusesData = [
   {
@@ -71,13 +53,17 @@ const HomeScreen = ({ navigation }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [showNews, setShowNews] = useState(true);
   const [products, setProducts] = useState([]);
+  const [news, setNews] = useState([]);
 
   useEffect(() => {
-    fetch("https://api.webflow.com/v2/sites/6a11c594d6fd9a89cc7735ec/products", {
-      headers: {
-        Authorization: "Bearer 07f0bc77da6f49822c32323358ecaf5cee340cee5656df5811aaacec243c6773 ",
+    fetch(
+      "https://api.webflow.com/v2/sites/6a11c594d6fd9a89cc7735ec/products",
+      {
+        headers: {
+          Authorization: `Bearer ${API_TOKEN}`,
+        },
       },
-    })
+    )
       .then((res) => res.json())
       .then((data) => {
         const formattedProducts = (data.items || []).map((item) => ({
@@ -96,12 +82,59 @@ const HomeScreen = ({ navigation }) => {
       .catch((error) => console.error("Error fetching products:", error));
   }, []);
 
+  useEffect(() => {
+    fetch(
+      "https://api.webflow.com/v2/collections/6a12fded3e0ee4b4b4bbd5a7/items",
+      {
+        headers: {
+          Authorization: `Bearer ${API_TOKEN}`,
+        },
+      },
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        const formattedNews = (data.items || []).map((item) => {
+          const rawContent = item.fieldData?.["volledige-inhoud"] || "";
+
+          const cleanContent = rawContent
+            .replace(/<\/h2>/g, "\n\n")
+            .replace(/<\/p>/g, "\n\n")
+            .replace(/<[^>]*>/g, "")
+            .replace(/&amp;/g, "&");
+
+          return {
+            id: item.id,
+            title: item.fieldData?.name,
+            description: item.fieldData?.["korte-inhoud"],
+            category: item.fieldData?.categorie,
+            campus: item.fieldData?.campus,
+            date: new Date(item.fieldData?.datum).toLocaleDateString("nl-BE", {
+              day: "numeric",
+              month: "long",
+              year: "numeric",
+            }),
+            color: item.fieldData?.["campus-kleur"],
+            image: {
+              uri: item.fieldData?.image?.url,
+            },
+            detailImage: {
+              uri: item.fieldData?.["image-detail"]?.url,
+            },
+            content: cleanContent,
+          };
+        });
+
+        setNews(formattedNews);
+      })
+      .catch((error) => console.error("Error fetching news:", error));
+  }, []);
+
   const filteredProducts = products.filter((product) =>
     product.title?.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
-  const filteredNews = newsData.filter((news) =>
-    news.title.toLowerCase().includes(searchQuery.toLowerCase()),
+  const filteredNews = news.filter((newsItem) =>
+    newsItem.title?.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   return (
@@ -154,16 +187,17 @@ const HomeScreen = ({ navigation }) => {
         <>
           <Text style={styles.sectionTitle}>Nieuws</Text>
 
-          {filteredNews.map((news) => (
+          {filteredNews.map((newsItem) => (
             <NewsCard
-              key={news.id}
-              title={news.title}
-              description={news.description}
-              category={news.category}
-              campus={news.campus}
-              date={news.date}
-              image={news.image}
-              onPress={() => navigation.navigate("NewsDetails", news)}
+              key={newsItem.id}
+              title={newsItem.title}
+              description={newsItem.description}
+              image={newsItem.image}
+              category={newsItem.category}
+              campus={newsItem.campus}
+              date={newsItem.date}
+              color={newsItem.color}
+              onPress={() => navigation.navigate("NewsDetails", newsItem)}
             />
           ))}
         </>
