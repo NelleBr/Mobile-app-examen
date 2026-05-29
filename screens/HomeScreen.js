@@ -107,6 +107,13 @@ const HomeScreen = ({ navigation }) => {
         Ontdek onze campussen, nieuws en schoolshop.
       </Text>
 
+      <Pressable
+        style={styles.studyButton}
+        onPress={() => navigation.navigate("StudyFinder")}
+      >
+        <Text style={styles.studyButtonText}>Vind jouw opleiding</Text>
+      </Pressable>
+
       <View style={styles.inputSection}>
         <Text style={styles.label}>Zoek een product of nieuwsartikel:</Text>
         <TextInput
@@ -236,6 +243,20 @@ const styles = StyleSheet.create({
     color: "#000000",
     marginBottom: 18,
     marginTop: 10,
+  },
+  studyButton: {
+    backgroundColor: "#86BC25",
+    paddingVertical: 14,
+    paddingHorizontal: 20,
+    borderRadius: 14,
+    marginBottom: 28,
+    alignItems: "center",
+  },
+
+  studyButtonText: {
+    color: "#FFFFFF",
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });
 
