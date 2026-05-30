@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -7,38 +7,11 @@ import {
   TextInput,
   Pressable,
 } from "react-native";
+
 import StudyCard from "../components/StudyCard";
 
-const studiesData = [
-  {
-    id: 1,
-    name: "Applicatie- en databeheer",
-    campus: "Zandpoort",
-    grade: "3de graad",
-    duration: "2 jaar",
-    description:
-      "Of je nu wetenschapper of ondernemer bent, zonder informatica kan je niet. Leer werken met data, apps en digitale systemen.",
-    color: "#EF2B20",
-  },
-  {
-    id: 2,
-    name: "Duaal leren",
-    campus: "Nekkerspoel",
-    grade: "3de graad",
-    duration: "2 jaar",
-    description: "Combineer leren op school met ervaring op de werkvloer.",
-    color: "#DEDC00",
-  },
-  {
-    id: 3,
-    name: "Maatschappij en welzijn",
-    campus: "Botaniek",
-    grade: "2de graad",
-    duration: "2 jaar",
-    description: "Voor leerlingen met interesse in zorg, welzijn en mensen.",
-    color: "#E9509A",
-  },
-];
+const API_TOKEN =
+  "07f0bc77da6f49822c32323358ecaf5cee340cee5656df5811aaacec243c6773";
 
 const campuses = [
   "",
@@ -53,10 +26,41 @@ const campuses = [
 const StudyFinderScreen = ({ navigation }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCampus, setSelectedCampus] = useState("");
+  const [studies, setStudies] = useState([]);
 
-  const filteredStudies = studiesData.filter(
+  useEffect(() => {
+    fetch(
+      "https://api.webflow.com/v2/collections/6a18221c22a405f203a7113d/items",
+      {
+        headers: {
+          Authorization: `Bearer ${API_TOKEN}`,
+        },
+      },
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        const formattedStudies = (data.items || []).map((item) => ({
+          id: item.id,
+          name: item.fieldData?.name,
+          campus: item.fieldData?.campus,
+          grade: item.fieldData?.graad,
+          duration: item.fieldData?.jaar,
+          description: item.fieldData?.["korte-beschrijving"],
+          content: item.fieldData?.beschrijving,
+          color: item.fieldData?.["kleur-campus"],
+          stream: item.fieldData?.stroom,
+          category: item.fieldData?.["campus-categorie"],
+          content: item.fieldData?.beschrijving,
+        }));
+
+        setStudies(formattedStudies);
+      })
+      .catch((error) => console.error("Error fetching studies:", error));
+  }, []);
+
+  const filteredStudies = studies.filter(
     (study) =>
-      study.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
+      study.name?.toLowerCase().includes(searchQuery.toLowerCase()) &&
       (selectedCampus === "" || study.campus === selectedCampus),
   );
 

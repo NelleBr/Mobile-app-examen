@@ -1,38 +1,46 @@
 import React from "react";
-import { StyleSheet, Text, ScrollView, View, Pressable } from "react-native";
+import { StyleSheet, Text, ScrollView, View } from "react-native";
 
-const StudyDetailsScreen = ({ route, navigation }) => {
-  const { name, campus, grade, duration, description, color } = route.params;
+const StudyDetailsScreen = ({ route }) => {
+  const { name, campus, grade, duration, description, content, color } =
+    route.params;
+
+  const cleanContent = content
+    ?.replace(/<\/h1>/g, "\n\n")
+    .replace(/<\/h2>/g, "\n\n")
+    .replace(/<\/h3>/g, "\n\n")
+    .replace(/<\/p>/g, "\n\n")
+    .replace(/<br\s*\/?>/g, "\n")
+    .replace(/<[^>]*>/g, "")
+    .replace(/&amp;/g, "&")
+    .trim();
 
   return (
     <ScrollView style={styles.container}>
       <View style={[styles.hero, { backgroundColor: color }]}>
-
         <View style={styles.badge}>
           <Text style={styles.badgeText}>D/A</Text>
         </View>
 
         <Text style={styles.title}>{name}</Text>
-
         <Text style={styles.heroDescription}>{description}</Text>
       </View>
 
       <View style={styles.content}>
         <Text style={styles.sectionTitle}>Over deze opleiding</Text>
 
-        <Text style={styles.text}>{description}</Text>
+        <Text style={styles.text}>{cleanContent}</Text>
 
-        <Text style={styles.text}>
-          Inzicht en kennis van informatica is een enorme meerwaarde om ideeën
-          vorm te geven en toe te passen. In de ondernemerswereld heeft
-          informatica een enorme stempel gedrukt.
-        </Text>
+        <View style={styles.infoBox}>
+          <Text style={styles.infoTitle}>Campus</Text>
+          <Text style={styles.infoText}>{campus}</Text>
 
-        <Text style={styles.text}>
-          Een goede kennis van informatica gaat veel verder dan websites maken
-          of werken met computers. Het is een sector die voortdurend verandert.
-        </Text>
+          <Text style={styles.infoTitle}>Graad</Text>
+          <Text style={styles.infoText}>{grade}</Text>
 
+          <Text style={styles.infoTitle}>Duur</Text>
+          <Text style={styles.infoText}>{duration}</Text>
+        </View>
       </View>
     </ScrollView>
   );
@@ -45,7 +53,7 @@ const styles = StyleSheet.create({
   },
 
   hero: {
-    paddingTop: 20,
+    paddingTop: 30,
     paddingHorizontal: 24,
     paddingBottom: 50,
   },
@@ -67,8 +75,8 @@ const styles = StyleSheet.create({
 
   title: {
     color: "#FFFFFF",
-    fontSize: 64,
-    lineHeight: 70,
+    fontSize: 48,
+    lineHeight: 60,
     fontWeight: "bold",
     marginBottom: 30,
   },
@@ -76,27 +84,47 @@ const styles = StyleSheet.create({
   heroDescription: {
     color: "#FFFFFF",
     fontSize: 20,
-    lineHeight: 38,
+    lineHeight: 34,
   },
 
   content: {
-    backgroundColor: "#F5F5F5",
     padding: 24,
   },
 
   sectionTitle: {
-    fontSize: 54,
-    lineHeight: 58,
+    fontSize: 44,
+    lineHeight: 50,
     fontWeight: "bold",
     color: "#000000",
     marginBottom: 30,
   },
 
   text: {
-    fontSize: 22,
-    lineHeight: 38,
+    fontSize: 20,
+    lineHeight: 34,
     color: "#364153",
-    marginBottom: 28,
+    marginBottom: 35,
+  },
+
+  infoBox: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 22,
+    padding: 22,
+    marginBottom: 40,
+  },
+
+  infoTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#000000",
+    marginTop: 12,
+  },
+
+  infoText: {
+    fontSize: 18,
+    color: "#364153",
+    marginTop: 5,
+    marginBottom: 10,
   },
 });
 
